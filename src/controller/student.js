@@ -1,9 +1,9 @@
 const axios = require("axios");
+const axiosApi = require("./queryHelpers")
 
 const GRAPHQL_URL = "http://localhost:8080/graphql";
 
 async function getAllStudents() {
-
     const query = `
     query {
       getAllStudents {
@@ -34,6 +34,42 @@ async function getAllStudents() {
     return response.data.data.getAllStudents;
 }
 
+async function createStudent(req, res) {
+    try {
+        const {
+            name,
+            branch,
+            percentage,
+            subjectId,
+            grade
+        } = req.body;
+
+        // 1. Create the student
+        const student = await axiosApi.createStudent(
+            name,
+            Number(percentage),
+            branch
+        );
+
+        // 2. Add the selected subject + grade
+        await axiosApi.addSubjectToStudent(
+            student.rollNo,
+            Number(subjectId),
+            Number(grade)
+        );
+
+        // 3. Go back to the student list
+        res.redirect("/students");
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).send(
+            "Unable to create student"
+        );
+    }
+}
+
 module.exports = {
-    getAllStudents
+    getAllStudents, createStudent
 };

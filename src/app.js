@@ -4,6 +4,13 @@ const nunjucks = require("nunjucks");
 const studentRoutes = require("./routes/studentRoutes");
 
 const app = express();
+const path = require("path");
+
+app.use(
+    express.static(
+        path.join(__dirname, "../public")
+    )
+);
 
 nunjucks.configure("views", {
     autoescape: true,
