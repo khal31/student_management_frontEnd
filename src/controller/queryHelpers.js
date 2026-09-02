@@ -1,6 +1,67 @@
 const axios = require("axios");
 const GRAPHQL_URL = "http://localhost:8080/graphql";
 
+
+async function createStudentWithSubject(
+    name,
+    percentage,
+    branch,
+    subject,
+    grade
+) {
+
+    const mutation = `
+        mutation CreateStudentWithSubject(
+            $name: String!
+            $percentage: Float!
+            $branch: String!
+            $subject: String!
+            $grade: Float!
+        ) {
+            createStudentWithSubject(
+                name: $name
+                percentage: $percentage
+                branch: $branch
+                subject: $subject
+                grade: $grade
+            ) {
+                rollNo
+                name
+                percentage
+                branch
+                subjects {
+                    id
+                    grade
+                    subject {
+                        id
+                        name
+                    }
+                }
+            }
+        }
+    `;
+
+    const response = await axios.post(GRAPHQL_URL, {
+        query: mutation,
+        variables: {
+            name,
+            percentage,
+            branch,
+            subject,
+            grade
+        }
+    });
+
+    if (response.data.errors) {
+        throw new Error(
+            response.data.errors[0].message
+        );
+    }
+
+    return response.data.data.createStudentWithSubject;
+}
+
+
 async function createStudent(name, percentage, branch) {
 
 
@@ -118,5 +179,5 @@ async function addSubjectToStudent(
 }
 
 module.exports = {
-    createStudent,addSubjectToStudent, createSubject
+    createStudent,addSubjectToStudent, createSubject, createStudentWithSubject
 }

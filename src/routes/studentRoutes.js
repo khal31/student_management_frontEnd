@@ -1,9 +1,11 @@
 const express = require("express");
-const axiosAPI = require("../controller/queryHelpers")
+const axiosApiQuery = require("../controller/queryHelpers")
 
 const {
     getAllStudents
 } = require("../controller/student");
+const {addSubjectToStudent} = require("../controller/queryHelpers");
+const studentService = require("../controller/studentService");
 
 const router = express.Router();
 
@@ -41,26 +43,13 @@ router.post("/students", async (req, res) => {
         } = req.body;
 
         console.log("Form data:", req.body);
-
-        // 1. Create the student
-        const student = await axiosAPI.createStudent(
+        await studentService.createStudentWithSubject({
             name,
-            Number(percentage),
-            branch
-        );
-
-        // 2. Create the subject
-        const createdSubject = await axiosAPI.createSubject(
-            subject
-        );
-
-        // 3. Link the subject to the student
-        await axiosAPI.addSubjectToStudent(
-            student.rollNo,
-            createdSubject.id,
-            Number(grade)
-        );
-
+            branch,
+            percentage: Number(percentage),
+            subject,
+            grade: Number(grade)
+        });
         res.redirect("/students");
 
     } catch (error) {
