@@ -7,7 +7,7 @@ jest.mock("axios");
 
 
 
-describe("queryHelpers", () => {
+describe("query api calls to graphql", () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -51,4 +51,101 @@ describe("queryHelpers", () => {
             axios.post
         ).toHaveBeenCalledTimes(1);
     });
+
+    test("throws error when GraphQL returns an error", async () => {
+
+        axios.post.mockResolvedValue({
+            data: {
+                errors: [
+                    {
+                        message:
+                            "Unable to retrieve students"
+                    }
+                ]
+            }
+        });
+
+        await expect(
+            queryHelpers.getAllStudents()
+        ).rejects.toThrow(
+            "Unable to retrieve students"
+        );
+    });
+
+    test("returns student with subjects details", async () => {
+
+        const createdStudent = {
+            rollNo: 1,
+            name: "Ali",
+            percentage: 85.5,
+            branch: "Computer Science"
+        };
+
+        axios.post.mockResolvedValue({
+            data: {
+                data: {
+                    createStudentWithSubject:
+                    createdStudent
+                }
+            }
+        });
+
+        const result =
+            await queryHelpers
+                .createStudentWithSubject(
+                    "Ali",
+                    85.5,
+                    "Computer Science",
+                    "Maths",
+                    90
+                );
+
+        expect(result)
+            .toEqual(createdStudent);
+    });
+    test("throws error when axios request fails", async () => {
+
+        axios.post.mockRejectedValue(
+            new Error("Network Error")
+        );
+
+        await expect(
+            queryHelpers
+                .createStudentWithSubject(
+                    "Ali",
+                    85.5,
+                    "Computer Science",
+                    "Maths",
+                    90
+                )
+        ).rejects.toThrow(
+            "Network Error"
+        );
+    });
+
+    test("throws error when GraphQL returns an error", async () => {
+
+        axios.post.mockResolvedValue({
+            data: {
+                errors: [
+                    {
+                        message: "Unable to create student"
+                    }
+                ]
+            }
+        });
+
+        await expect(
+            queryHelpers.createStudentWithSubject(
+                "Ali",
+                85.5,
+                "Computer Science",
+                "Maths",
+                90
+            )
+        ).rejects.toThrow(
+            "Unable to create student"
+        );
+    });
+
 });
