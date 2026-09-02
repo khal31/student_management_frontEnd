@@ -1,10 +1,10 @@
 const express = require("express");
-const axiosApiQuery = require("../controller/queryHelpers")
+
 
 const {
-    getAllStudents
-} = require("../controller/student");
-const {addSubjectToStudent} = require("../controller/queryHelpers");
+    getAllStudents, createStudentWithSubject
+} = require("../controller/studentService");
+
 const studentService = require("../controller/studentService");
 
 const router = express.Router();

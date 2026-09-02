@@ -1,5 +1,12 @@
 const axiosAPI = require("../controller/queryHelpers");
 
+
+
+async function getAllStudents() {
+
+    return axiosAPI.getAllStudents();
+}
+
 async function createStudentWithSubject({
                                             name,
                                             branch,
@@ -19,5 +26,5 @@ async function createStudentWithSubject({
 
 
 module.exports = {
-    createStudentWithSubject
+    createStudentWithSubject, getAllStudents
 };
